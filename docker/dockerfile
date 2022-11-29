@@ -1,0 +1,9 @@
+# alpine base image that apt updates
+FROM alpine:latest
+RUN apk update && apk upgrade
+RUN apk add --no-cache bash
+
+
+# make bash the entrypoint
+
+CMD  bash sleep 1000

@@ -1,0 +1,11 @@
+# would like to have base alpine docker compose up
+services:
+  plex:
+    platform: linux/amd64
+    image: flex-base
+    container_name: plex
+    network_mode: host
+    environment:
+      - VERSION=docker
+    restart: always
+    command: sh -c "sleep 6000 && my_command"
