@@ -2,4 +2,3 @@
 # usage: ./build.sh
 # add name of the container to be flex-base
 docker buildx build --platform linux/amd64 -t flex-base .
-
