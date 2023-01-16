@@ -17,3 +17,8 @@ output "kubernetes_cluster_host" {
   value       = google_container_cluster.primary.endpoint
   description = "GKE Cluster Host"
 }
+
+output "node_pool_name" {
+  value       = google_container_cluster.primary.name
+  description = "name of primary node pool"
+}

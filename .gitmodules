@@ -1,0 +1,3 @@
+[submodule "iac/terraform-infra/cheap-gke-cluster"]
+	path = iac/terraform-infra/cheap-gke-cluster
+	url = https://github.com/murphye/cheap-gke-cluster
