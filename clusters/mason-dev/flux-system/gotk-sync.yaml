@@ -19,7 +19,6 @@ metadata:
   name: flux-system
   namespace: flux-system
 spec:
-  serviceAccountName: kustomize-controller
   interval: 10m0s
   path: ./clusters/mason-dev
   prune: true
