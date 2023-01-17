@@ -1,0 +1,22 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+-   repo: https://github.com/Yelp/detect-secrets
+    rev: v0.14.3
+    hooks:
+    -   id: detect-secrets
+-   repo: https://github.com/dmitri-lerko/pre-commit-docker-kustomize
+    rev: f3a8533
+    hooks:
+    -   id: kustomize
+        name: flux-cluster
+        args: [clusters/mason-dev]
+        verbose: false
+    -   id: kustomize
+        name: tekton
+        args: [core/tekton/components]
+        verbose: false
