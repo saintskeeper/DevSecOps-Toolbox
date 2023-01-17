@@ -1,4 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+- interceptor-22.1.yaml
 - tekton-pipelines-42.2.yaml
+- trigger-release-22.1.yaml
