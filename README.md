@@ -9,9 +9,11 @@ Set up Civo  and mark down your api key
 
 ## Step 3
 ```bash
-cd civo/cluster-deploy
-terraform plan
-terraform apply --auto approve
+cd iac/terraform-infra/civo/cluster-deploy
+#
+terraform init
+terraform apply --auto-approve # paste your Civo key
+# GL HF :)
 ```
 *NOTE*
 - i ran into issues with the node auto upgrading and had to untaint the k8s object and re-run the apply
