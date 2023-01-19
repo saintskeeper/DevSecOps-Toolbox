@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
-  path: ./core/kyverno
+  path: ./core/security/kyverno
   prune: true
   serviceAccountName: kustomize-controller
   sourceRef:
