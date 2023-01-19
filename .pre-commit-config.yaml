@@ -1,21 +1,23 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
-    hooks:
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
--   repo: https://github.com/Yelp/detect-secrets
-    rev: v0.14.3
-    hooks:
-    -   id: detect-secrets
--   repo: https://github.com/dmitri-lerko/pre-commit-docker-kustomize
-    rev: f3a8533
-    hooks:
-    -   id: kustomize
-        name: flux-cluster
-        args: [clusters/mason-dev]
-        verbose: false
-    -   id: kustomize
-        name: tekton
-        args: [core/tekton/components]
-        verbose: false
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v3.2.0
+      hooks:
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: check-added-large-files
+          - id: detect-private-key
+    -   repo: https://github.com/Yelp/detect-secrets
+        rev: v1.3.0
+        hooks:
+        -   id: detect-secrets
+            args: ['--baseline', '.secrets.baseline']
+            additional_dependencies: ['gibberish-detector']
+    - repo: local
+      hooks:
+       - id: validate-flux
+         name: validate-fux
+         entry: scripts/tests/validation-flux.sh
+         language: script
+         pass_filenames: false
