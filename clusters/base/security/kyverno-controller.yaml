@@ -5,9 +5,10 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
-  path: ./core/security/kyverno
+  path: ./core/kyverno
   prune: true
   serviceAccountName: kustomize-controller
   sourceRef:
     kind: GitRepository
     name: flux-system
+# need to add service account ref
