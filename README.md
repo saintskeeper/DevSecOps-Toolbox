@@ -1,4 +1,5 @@
-# This repo houses a quickstart for bootstrapping a DevSecOps k8s stack
+# DevSecOps Toolkit on a budget
+This repo houses a quickstart for bootstrapping a DevSecOps k8s stack
 
 ## Step 1
 - fork the repo
