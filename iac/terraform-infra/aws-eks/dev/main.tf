@@ -116,3 +116,173 @@ module "vpc" {
 
   tags = local.tags
 }
+
+
+################################################################################
+# EKS Blueprints Addons
+################################################################################
+
+resource "aws_security_group" "ingress_nginx_external" {
+  name        = "ingress-nginx-external"
+  description = "Allow public HTTP and HTTPS traffic"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # modify to your requirements
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # modify to your requirements
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.tags
+}
+
+# ingress-nginx controller, exposed by an internet facing Network Load Balancer
+module "ingres_nginx_external" {
+  source  = "aws-ia/eks-blueprints-addons/aws"
+  version = "~> 1.0"
+
+  cluster_name      = module.eks.cluster_name
+  cluster_endpoint  = module.eks.cluster_endpoint
+  cluster_version   = module.eks.cluster_version
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  #addons you'll need
+  eks_addons = {
+    aws-ebs-csi-driver = {
+      most_recent = true
+    }
+    coredns = {
+      most_recent = true
+    }
+    vpc-cni = {
+      most_recent = true
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+  }
+  enable_ingress_nginx = true
+  ingress_nginx = {
+    name = "ingress-nginx-external"
+    values = [
+      <<-EOT
+          controller:
+            replicaCount: 3
+            service:
+              annotations:
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+                service.beta.kubernetes.io/aws-load-balancer-security-groups: ${aws_security_group.ingress_nginx_external.id}
+                service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: true
+              loadBalancerClass: service.k8s.aws/nlb
+            topologySpreadConstraints:
+              - maxSkew: 1
+                topologyKey: topology.kubernetes.io/zone
+                whenUnsatisfiable: ScheduleAnyway
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: ingress-nginx-external
+              - maxSkew: 1
+                topologyKey: kubernetes.io/hostname
+                whenUnsatisfiable: ScheduleAnyway
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: ingress-nginx-external
+            minAvailable: 2
+            ingressClassResource:
+              name: ingress-nginx-external
+              default: false
+        EOT
+    ]
+  }
+}
+
+resource "aws_security_group" "ingress_nginx_internal" {
+  name        = "ingress-nginx-internal"
+  description = "Allow local HTTP and HTTPS traffic"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [local.vpc_cidr] # modify to your requirements
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [local.vpc_cidr] # modify to your requirements
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.tags
+}
+
+# ingress-nginx controller, exposed by an internal Network Load Balancer
+module "ingres_nginx_internal" {
+  source  = "aws-ia/eks-blueprints-addons/aws"
+  version = "~> 1.6.0"
+
+  cluster_name      = module.eks.cluster_name
+  cluster_endpoint  = module.eks.cluster_endpoint
+  cluster_version   = module.eks.cluster_version
+  oidc_provider_arn = module.eks.oidc_provider_arn
+
+  enable_ingress_nginx = true
+
+  ingress_nginx = {
+    name = "ingress-nginx-internal"
+    values = [
+      <<-EOT
+          controller:
+            replicaCount: 3
+            service:
+              annotations:
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+                service.beta.kubernetes.io/aws-load-balancer-security-groups: ${aws_security_group.ingress_nginx_internal.id}
+                service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: true
+              loadBalancerClass: service.k8s.aws/nlb
+            topologySpreadConstraints:
+              - maxSkew: 1
+                topologyKey: topology.kubernetes.io/zone
+                whenUnsatisfiable: ScheduleAnyway
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: ingress-nginx-internal
+              - maxSkew: 1
+                topologyKey: kubernetes.io/hostname
+                whenUnsatisfiable: ScheduleAnyway
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: ingress-nginx-internal
+            minAvailable: 2
+            ingressClassResource:
+              name: ingress-nginx-internal
+              default: false
+        EOT
+    ]
+  }
+}
