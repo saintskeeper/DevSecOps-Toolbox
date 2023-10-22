@@ -26,4 +26,4 @@ jobs:
         context: .
         file: ./Containers/test/Dockerfile
         push: true
-        tags: ghcr.io/saintskeeper/test:latest
+        tags: ghcr.io/saintskeeper/devsecops/test:latest
