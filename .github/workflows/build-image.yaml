@@ -20,10 +20,26 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push Docker image
+    - name: Set up Docker image tag
+      id: set-tag
+      run: echo "::set-output name=tag::ghcr.io/WebtronicLabs/proflyt-military/api-proflyt:${GITHUB_RUN_NUMBER}"
+
+    - name: Build and push Docker image (api-proflyt)
       uses: docker/build-push-action@v2
       with:
         context: .
-        file: ./Containers/test/Dockerfile
+        file: ./apps/api-proflyt/Dockerfile
         push: true
-        tags: ghcr.io/saintskeeper/devsecops/test:latest
+        tags: ${{ steps.set-tag.outputs.tag }}
+
+    - name: Set up Docker image tag (its-scanner)
+      id: set-tag-its-scanner
+      run: echo "::set-output name=tag::ghcr.io/WebtronicLabs/proflyt-military/its-scanner:${GITHUB_RUN_NUMBER}"
+
+    - name: Build and push Docker image (its-scanner)
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./apps/its-scanner/Dockerfile
+        push: true
+        tags: ${{ steps.set-tag-its-scanner.outputs.tag }}
