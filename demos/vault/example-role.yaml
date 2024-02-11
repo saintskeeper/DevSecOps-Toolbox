@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  # You should replace "management-role" with a name that describes the purpose of this role within your organization or project.
+  name: management-role
+rules:
+  # Grant permissions to manage ServiceAccounts and their tokens
+  - apiGroups: [""]
+    resources: ["serviceaccounts", "serviceaccounts/token"]
+    verbs: ["create", "update", "delete"]
+  # Grant permissions to manage RoleBindings and ClusterRoleBindings
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["rolebindings", "clusterrolebindings"]
+    verbs: ["create", "update", "delete"]
+  # Grant permissions to manage Roles and ClusterRoles, including the ability to bind and escalate roles
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "clusterroles"]
+    verbs: ["bind", "escalate", "create", "update", "delete"]
